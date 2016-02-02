@@ -60,8 +60,8 @@ Classical_Lovers <- dbGetQuery(con, "SELECT Invoice.BillingCity, SUM(InvoiceLine
 				   JOIN Genre ON (Track.GenreId = Genre.GenreId)
 				   WHERE Genre.Name = 'Classical'
 				   GROUP BY Invoice.BillingCity
-        	       ORDER BY Count DESC
-                   Limit 5")
+				   ORDER BY Count DESC
+				   Limit 5")
                   
 # Which artist was the most popular in each given state and how many singles did each sell? 
 
