@@ -2,7 +2,7 @@ library("RSQLite")
 
 
 # Connect to the sqlite file
-con = dbConnect (RSQLite::SQLite(), dbname = "~/Desktop/R Project/SQL Lite/funWithMYSQL/Chinook_Sqlite.sqlite")
+con = dbConnect (RSQLite::SQLite(), dbname = "~/Desktop/R Project/SQL Lite/funWithMYSQL/R-code-for-SQL-Integration-/Chinook_Sqlite.sqlite")
 
 
 # get a list of all tables and view the tables
@@ -59,7 +59,7 @@ Classical_Lovers <- dbGetQuery(con, "SELECT Invoice.BillingCity, SUM(InvoiceLine
 				   JOIN Track ON (InvoiceLine.TrackId = Track.TrackId)
 				   JOIN Genre ON (Track.GenreId = Genre.GenreId)
 				   WHERE Genre.Name = 'Classical'
-				   GROUP BY Invo ice.BillingCity
+				   GROUP BY Invoice.BillingCity
         	       ORDER BY Count DESC
                    Limit 5")
                   
@@ -108,7 +108,7 @@ Exp_PerCountry <- dbGetQuery(con, "SELECT SUM(Invoice.Total) AS TotalExpenditure
  					GROUP BY BillingCountry
  					ORDER BY TotalExpenditure DESC")
  					
- 					
+ 					 
  					
 
 					
