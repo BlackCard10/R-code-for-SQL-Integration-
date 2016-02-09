@@ -162,7 +162,7 @@ m <- leaflet(Address_USAGeo) %>% addTiles() %>% addMarkers(
 	m 	  
 
 # Build a dataframe of the customer Id, billing zipcode and a binary factor of whether a given
-purchase is for rock music.  
+# purchase is for rock music.  
 Rock_Mailer <- dbGetQuery(con, "SELECT Customer.CustomerId, Invoice.BillingPostalCode, 
 					CASE 
 						WHEN Genre.Name LIKE '%Rock%' THEN 1 
@@ -207,12 +207,57 @@ Test.glm <- glm(as.factor(Sales) ~ Milliseconds, family = "binomial", data = Lon
 summary(Test.glm)
 
 
+# Query the database for the dates of sales of songs by "Aerosmith" 
+Aerosmith_dates <- dbGetQuery(con, "SELECT Invoice.InvoiceDate, InvoiceLine.UnitPrice
+                      FROM Invoice JOIN InvoiceLine ON (InvoiceLine.InvoiceId = Invoice.InvoiceId)
+                      JOIN Track ON (InvoiceLine.TrackId = Track.TrackId)
+                      JOIN Album ON (Album.AlbumId = Track.AlbumId)
+                      JOIN Artist ON (Artist.ArtistId = Album.ArtistId) 
+                      WHERE Artist.Name = 'Aerosmith' ")
+
+# Change format of the column to a date item 
+Aerosmith_dates$InvoiceDate <- as.POSIXct(Aerosmith_dates$InvoiceDate)
 
 
-					  
+# Create a new column for the Year, Month and Quarter for the Aerosmith Data
+Aerosmith_datesSplit <- Aerosmith_dates %>% 
+                        mutate(Year = as.integer(format(Aerosmith_dates$InvoiceDate, '%Y')), Month = as.integer(format(Aerosmith_dates$InvoiceDate, '%m')))
 
-				    
 
+# Catagorize the Months by Financial Quarter
+Aerosmith_datesSplit$Quarter <- 0
+
+# Classify Month to Quarters
+  for (i in 1:length(Aerosmith_datesSplit$Month)) {
+    if (Aerosmith_datesSplit$Month[i] < 4) {
+      Aerosmith_datesSplit$Quarter[i] = 1
+    }
+    else if (Aerosmith_datesSplit$Month[i] >= 4 & Aerosmith_datesSplit$Month[i] < 7) {
+      Aerosmith_datesSplit$Quarter[i] = 2
+    }
+    else if (Aerosmith_datesSplit$Month[i] >= 7 & Aerosmith_datesSplit$Month[i] < 10) {
+      Aerosmith_datesSplit$Quarter[i] = 3
+    } 
+    else { 
+      Aerosmith_datesSplit$Quarter[i] = 4 
+    } 
+  }
+  
+  
+# Return all of the invoices which were generated in the last 30 days for customer number 5. 
+
+Last_Thirty <- dbGetQuery(con, "SELECT * 
+				    FROM Invoice
+				    WHERE DATE_SUB(CURDATE(), INTERVAL 30 DAY) >= Invoice.InvoiceDate  
+				    AND Invoice.CustomerId = 5 ")
+				
+
+
+
+						
+			
+				
+				 
 
 
 
